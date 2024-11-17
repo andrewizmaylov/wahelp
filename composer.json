@@ -1,0 +1,17 @@
+{
+    "name": "andreyizmaylov/wahelp",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "andrewizmaylov",
+            "email": "andrew.izmaylov@gmail.com"
+        }
+    ],
+    "require": {
+	    "ext-pdo": "*"
+    }
+}
