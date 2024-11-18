@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: 'WAHELP API'
+  description: 'This API allows you to interact with the system and perform operations.'
+  contact:
+    email: andrew.izmaylov@gmail.com
+  version: 1.0.0
+paths:
+  /api/v1/users/import:
+    post:
+      tags:
+        - Users
+      summary: 'Upload CSV to import users'
+      description: 'This API endpoint allows you to upload a CSV file containing user data. The file should be in CSV format.'
+      operationId: 7892c0b94ded1b555baf3afb3acc17c9
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  description: 'CSV file containing user data'
+                  type: string
+                  format: binary
+              type: object
+      responses:
+        '200':
+          description: 'Users uploaded successfully and added to the database.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Users uploaded successfully' }
+                type: object
+        '400':
+          description: 'Invalid file format or other errors.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Загрузка возможно только из файлов CSV.' }
+                type: object
+  /api/v1/message/create:
+    post:
+      tags:
+        - Messages
+      summary: 'Create a new message'
+      description: 'This API endpoint allows you to create a new message by providing a theme and a message body.'
+      operationId: 83fde2049974bed4a7ce5e3d889086ae
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - theme
+                - message
+              properties:
+                theme:
+                  type: string
+                  example: Announcement
+                message:
+                  type: string
+                  example: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+              type: object
+      responses:
+        '200':
+          description: 'Message created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Message created successfully' }
+                  message_id: { type: integer, example: 123 }
+                type: object
+        '400':
+          description: 'Missing data or invalid request'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Недостаточно данных для создания сообщения' }
+                type: object
+  /api/v1/mail_list/create:
+    post:
+      tags:
+        - 'Mailing Lists'
+      summary: 'Create a new mail list queue'
+      description: 'This API endpoint allows you to create a new mail list queue. A message ID must be provided to create a new queue entry.'
+      operationId: a22e9ce94e13748eb3e19667a9c6a9c1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - message_id
+              properties:
+                message_id:
+                  type: integer
+                  example: 1
+              type: object
+      responses:
+        '200':
+          description: 'Queue created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Queue created successfully' }
+                  queue_id: { type: integer, example: 123 }
+                type: object
+        '400':
+          description: 'Missing required data or invalid request'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Недостаточно данных для создания очереди отправки' }
+                type: object
+  /api/v1/mail_list/proceed_queue:
+    post:
+      tags:
+        - Queues
+      summary: 'Process the message queue'
+      description: 'This API endpoint processes the message queue and sends all messages in the queue.'
+      operationId: 3f83942e7e89ca44271ef9d41e3b7bd0
+      responses:
+        '200':
+          description: 'All messages processed and sent successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Все сообщения успешно отправлены.' }
+                type: object
+        '400':
+          description: 'Invalid request or failure to process queue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Ошибка обработки очереди' }
+                type: object
+  /api/v1/mail_list/delete_proceeded:
+    post:
+      tags:
+        - Queues
+      summary: 'Delete all proceeded messages'
+      description: 'This API endpoint allows you to delete all messages that have already been processed and sent.'
+      operationId: 425fa26a3826347f115482ae72e39ca7
+      responses:
+        '200':
+          description: 'Messages successfully deleted'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Отправленные сообщения успешно удалены.' }
+                type: object
+        '400':
+          description: 'Invalid request or failure to delete messages'
+          content:
+            application/json:
+              schema:
+                properties:
+                  error: { type: string, example: 'Ошибка удаления отправленных сообщений' }
+                type: object
+tags:
+  -
+    name: Users
+    description: Users
+  -
+    name: Messages
+    description: Messages
+  -
+    name: 'Mailing Lists'
+    description: 'Mailing Lists'
+  -
+    name: Queues
+    description: Queues

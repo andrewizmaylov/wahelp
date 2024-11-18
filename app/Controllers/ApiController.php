@@ -2,9 +2,66 @@
 
 namespace App\Controllers;
 
+//use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Info(
+ *     title="WAHELP API",
+ *     version="1.0.0",
+ *     description="This API allows you to interact with the system and perform operations.",
+ *     @OA\Contact(
+ *         email="andrew.izmaylov@gmail.com"
+ *     )
+ * )
+ */
+
 class ApiController
 {
 	/**
+	 * @OA\Post(
+	 *     path="/api/v1/users/import",
+	 *     summary="Upload CSV to import users",
+	 *     description="This API endpoint allows you to upload a CSV file containing user data. The file should be in CSV format.",
+	 *     tags={"Users"},
+	 *     @OA\RequestBody(
+	 *         required=true,
+	 *         @OA\MediaType(
+	 *             mediaType="multipart/form-data",
+	 *             @OA\Schema(
+	 *                 type="object",
+	 *                 @OA\Property(
+	 *                     property="file",
+	 *                     type="string",
+	 *                     format="binary",
+	 *                     description="CSV file containing user data"
+	 *                 )
+	 *             )
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response="200",
+	 *         description="Users uploaded successfully and added to the database.",
+	 *         @OA\MediaType(
+	 *             mediaType="application/json",
+	 *             @OA\Schema(
+	 *                 type="object",
+	 *                 @OA\Property(property="message", type="string", example="Users uploaded successfully")
+	 *             )
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response="400",
+	 *         description="Invalid file format or other errors.",
+	 *         @OA\MediaType(
+	 *             mediaType="application/json",
+	 *             @OA\Schema(
+	 *                 type="object",
+	 *                 @OA\Property(property="error", type="string", example="Загрузка возможно только из файлов CSV.")
+	 *             )
+	 *         )
+	 *     )
+	 * )
+	 *
 	 * @throws \Exception
 	 */
 	public static function loadUsersFromCSV(): void
@@ -34,6 +91,48 @@ class ApiController
 
 
 	/**
+	 * @OA\Post(
+	 *      path="/api/v1/message/create",
+	 *      summary="Create a new message",
+	 *      description="This API endpoint allows you to create a new message by providing a theme and a message body.",
+	 *      tags={"Messages"},
+	 *      @OA\RequestBody(
+	 *          required=true,
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  required={"theme", "message"},
+	 *                  @OA\Property(property="theme", type="string", example="Announcement"),
+	 *                  @OA\Property(property="message", type="string", example="Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+	 *              )
+	 *          )
+	 *      ),
+	 *      @OA\Response(
+	 *          response="200",
+	 *          description="Message created successfully",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="message", type="string", example="Message created successfully"),
+	 *                  @OA\Property(property="message_id", type="integer", example=123)
+	 *              )
+	 *          )
+	 *      ),
+	 *      @OA\Response(
+	 *          response="400",
+	 *          description="Missing data or invalid request",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="error", type="string", example="Недостаточно данных для создания сообщения")
+	 *              )
+	 *          )
+	 *      )
+	 *  )
+	 *
 	 * @throws \Exception
 	 */
 	public static function createMessage(): void
@@ -58,6 +157,47 @@ class ApiController
 	}
 
 	/**
+	 * @OA\Post(
+	 *      path="/api/v1/mail_list/create",
+	 *      summary="Create a new mail list queue",
+	 *      description="This API endpoint allows you to create a new mail list queue. A message ID must be provided to create a new queue entry.",
+	 *      tags={"Mailing Lists"},
+	 *      @OA\RequestBody(
+	 *          required=true,
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  required={"message_id"},
+	 *                  @OA\Property(property="message_id", type="integer", example=1)
+	 *              )
+	 *          )
+	 *      ),
+	 *      @OA\Response(
+	 *          response="200",
+	 *          description="Queue created successfully",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="message", type="string", example="Queue created successfully"),
+	 *                  @OA\Property(property="queue_id", type="integer", example=123)
+	 *              )
+	 *          )
+	 *      ),
+	 *      @OA\Response(
+	 *          response="400",
+	 *          description="Missing required data or invalid request",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="error", type="string", example="Недостаточно данных для создания очереди отправки")
+	 *              )
+	 *          )
+	 *      )
+	 *  )
+	 *
 	 * @throws \Exception
 	 */
 	public static function createMailList(): void
@@ -77,6 +217,35 @@ class ApiController
 
 
 	/**
+	 * @OA\Post(
+	 *      path="/api/v1/mail_list/proceed_queue",
+	 *      summary="Process the message queue",
+	 *      description="This API endpoint processes the message queue and sends all messages in the queue.",
+	 *      tags={"Queues"},
+	 *      @OA\Response(
+	 *          response="200",
+	 *          description="All messages processed and sent successfully",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="message", type="string", example="Все сообщения успешно отправлены.")
+	 *              )
+	 *          )
+	 *      ),
+	 *      @OA\Response(
+	 *          response="400",
+	 *          description="Invalid request or failure to process queue",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="error", type="string", example="Ошибка обработки очереди")
+	 *              )
+	 *          )
+	 *      )
+	 *  )
+	 *
 	 * @throws \Exception
 	 */
 	public static function proceedQueue(): void
@@ -99,6 +268,35 @@ class ApiController
 	}
 
 	/**
+	 * @OA\Post(
+	 *      path="/api/v1/mail_list/delete_proceeded",
+	 *      summary="Delete all proceeded messages",
+	 *      description="This API endpoint allows you to delete all messages that have already been processed and sent.",
+	 *      tags={"Queues"},
+	 *      @OA\Response(
+	 *          response="200",
+	 *          description="Messages successfully deleted",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="message", type="string", example="Отправленные сообщения успешно удалены.")
+	 *              )
+	 *          )
+	 *      ),
+	 *      @OA\Response(
+	 *          response="400",
+	 *          description="Invalid request or failure to delete messages",
+	 *          @OA\MediaType(
+	 *              mediaType="application/json",
+	 *              @OA\Schema(
+	 *                  type="object",
+	 *                  @OA\Property(property="error", type="string", example="Ошибка удаления отправленных сообщений")
+	 *              )
+	 *          )
+	 *      )
+	 *  )
+	 *
 	 * @throws \Exception
 	 */
 	public static function deleteProceeded(): void
