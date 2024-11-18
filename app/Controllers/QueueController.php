@@ -12,7 +12,7 @@ class QueueController
 	 */
 	public static function getUnprocessedQueues(): \Generator
 	{
-		$amount = rand(300, 967);
+		$amount = 900;
 
 		while (true) {
 			$records = Database::getQueryResults('SELECT * FROM `queues` WHERE status <> ' . StatusEnum::SUCCESS . ' LIMIT ' . $amount)->fetchAll();
